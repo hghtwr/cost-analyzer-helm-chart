@@ -75,8 +75,9 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "${datasource}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -155,34 +156,34 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by ($aggregation) (\n    (sum by (cluster_id,namespace,pod,container) (container_memory_usage_bytes{cluster_id=~\"$cluster\",namespace=~\"$namespace\",container=~\"$container\",container!=\"POD\",container!=\"\"}))\n   -(sum by (cluster_id,namespace,pod,container) (kube_pod_container_resource_requests{resource=\"memory\",unit=\"byte\",cluster_id=~\"$cluster\",namespace=~\"$namespace\",container=~\"$container\",container!=\"POD\",container!=\"\"}))\n)",
-          "legendFormat": "__auto",
+          "expr": "sum by ($aggregation) (\n    (sum by (cluster_id,namespace,pod,container) (container_memory_working_set_bytes{cluster_id=~\"$cluster\",namespace=~\"$namespace\",container=~\"$container\",container!=\"POD\",container!=\"\"}))\n)",
+          "legendFormat": "{{$aggregation}} Usage",
           "range": true,
           "refId": "A"
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by ($aggregation) (\n    -(sum by (cluster_id,namespace,pod,container) (kube_pod_container_resource_requests{resource=\"memory\",unit=\"byte\",cluster_id=~\"$cluster\",namespace=~\"$namespace\",container=~\"$container\",container!=\"POD\",container!=\"\"}))\n)",
-          "hide": true,
+          "expr": "sum by ($aggregation) (\n    (sum by (cluster_id,namespace,pod,container) (kube_pod_container_resource_requests{resource=\"memory\",unit=\"byte\",cluster_id=~\"$cluster\",namespace=~\"$namespace\",container=~\"$container\",container!=\"POD\",container!=\"\"}))\n)",
+          "hide": false,
           "legendFormat": "{{$aggregation}} Request",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "Memory Request-Usage",
+      "title": "Memory Requests and Usage",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
+        "uid": "${datasource}"
       },
       "fieldConfig": {
         "defaults": {
@@ -262,18 +263,19 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum by ($aggregation)(\n    (sum by (cluster_id,namespace,pod,container) (rate(container_cpu_usage_seconds_total{cluster_id=~\"$cluster\", namespace=~\"$namespace\", container=~\"$container\", container!=\"POD\",container!=\"\"}[1h])))\n    -  \n    (sum by (cluster_id,namespace,pod,container) (kube_pod_container_resource_requests{resource=\"cpu\",cluster_id=~\"$cluster\", namespace=~\"$namespace\", container=~\"$container\", container!=\"POD\",container!=\"\"}))\n)\n \n",
-          "legendFormat": "__auto",
+          "expr": "sum by ($aggregation)(\n    (sum by (cluster_id,namespace,pod,container) (rate(container_cpu_usage_seconds_total{cluster_id=~\"$cluster\", namespace=~\"$namespace\", container=~\"$container\", container!=\"POD\",container!=\"\"}[1h])))\n)\n \n",
+          "interval": "",
+          "legendFormat": "{{$aggregation}} Usage",
           "range": true,
           "refId": "A"
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "${datasource}"
           },
           "editorMode": "code",
           "expr": "-sum by ($aggregation)(\n    (sum by (cluster_id,namespace,pod,container) (kube_pod_container_resource_requests{resource=\"cpu\",cluster_id=~\"$cluster\", namespace=~\"$namespace\", container=~\"$container\", container!=\"POD\",container!=\"\"}))\n)",
@@ -283,13 +285,17 @@
           "refId": "B"
         }
       ],
-      "title": "CPU Request-Usage",
+      "title": "CPU Requests and Usage",
       "type": "timeseries"
     }
   ],
   "schemaVersion": 37,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "utilization",
+    "metrics",
+    "kubecost"
+  ],
   "templating": {
     "list": [
       {
@@ -346,7 +352,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${datasource}"
         },
         "definition": "label_values(kube_namespace_labels, cluster_id)",
         "hide": 0,
@@ -368,7 +374,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${datasource}"
         },
         "definition": "label_values(kube_namespace_labels{cluster_id=~\"$cluster\"}, namespace) ",
         "hide": 0,
@@ -390,7 +396,7 @@
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "uid": "${datasource}"
         },
         "definition": "label_values(container_memory_working_set_bytes{cluster_id=~\"$cluster\",namespace=~\"$namespace\", container!=\"POD\"}, container) ",
         "hide": 0,
@@ -416,8 +422,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Pod cost & utilization metrics(multi-cluster)",
-  "uid": "at-cost-analysis-pod2",
-  "version": 2,
+  "title": "Kubernetes Resource Efficiency",
+  "uid": "kubernetes-resource-efficiency",
+  "version": 1,
   "weekStart": ""
 }
